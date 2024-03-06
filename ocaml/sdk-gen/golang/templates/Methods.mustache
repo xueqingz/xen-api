@@ -1,0 +1,28 @@
+{{#messages}}
+// {{name}} {{description}}
+//
+{{#errors.0.name}}
+// Errors:
+{{/errors.0.name}}
+{{#errors}}
+// {{name}} - {{doc}}
+{{/errors}}
+func (_class {{class_go_name}}Class) {{go_name}}({{#params}}{{^first}}, {{/first}}{{name}} {{type}}{{/params}}) ({{#result}}_retval {{type}}, {{/result}}_err error) {
+    _method := "{{class_name}}.{{name}}"
+{{#params}}
+    _{{name}}Arg, _err := Serialize{{func_partial_type}}(fmt.Sprintf("%s(%s)", _method, "{{name}}"), {{name}})
+    if _err != nil {
+        return
+    }
+{{/params}}
+    {{#result}}_result, _err := {{/result}}{{^result}}_, _err = {{/result}}_class.client.APICall(_method{{#params}}, _{{name}}Arg{{/params}})
+{{#result}}
+    if _err != nil {
+        return
+    }
+    _retval, _err = Deserialize{{func_partial_type}}(_method + " -> ", _result)
+{{/result}}
+    return
+}
+
+{{/messages}}

@@ -1,0 +1,31 @@
+{{#record}}
+func Serialize{{func_partial_type}}(context string, record {{go_type}}) (rpcStruct map[string]interface{}, err error) {
+    rpcStruct = map[string]interface{}{}
+{{#fields}}
+    rpcStruct["{{name}}"], err = Serialize{{func_partial_type}}(fmt.Sprintf("%s.%s", context, "{{name}}"), record.{{name_exported}})
+    if err != nil {
+        return
+    }
+{{/fields}}
+    return
+}
+
+func Deserialize{{func_partial_type}}(context string, input interface{}) (record {{go_type}}, err error) {
+    rpcStruct, ok := input.(map[string]interface{})
+    if !ok {
+        err = fmt.Errorf("failed to parse XenAPI response: expected Go type %s at %s but got Go type %s with value %v", "map[string]interface{}", context, reflect.TypeOf(input), input)
+        return
+    }
+    {{#fields}}
+    {{name_internal}}Value, ok := rpcStruct["{{name}}"]
+    if ok && {{name_internal}}Value != nil {
+        record.{{name_exported}}, err = Deserialize{{func_partial_type}}(fmt.Sprintf("%s.%s", context, "{{name}}"), {{name_internal}}Value)
+        if err != nil {
+            return
+        }
+    }
+    {{/fields}}
+    return
+}
+
+{{/record}}

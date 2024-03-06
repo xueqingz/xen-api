@@ -1,0 +1,31 @@
+{{#simple_type}}
+func Serialize{{func_partial_type}}(context string, value {{type}}) ({{type}}, error) {
+    return value, nil
+}
+
+func Deserialize{{func_partial_type}}(context string, input interface{}) (value {{type}}, err error) {
+    if input == nil {
+        return
+    }
+{{#time_type}}
+    strValue := fmt.Sprintf("%v", input)
+    value, err = time.Parse("20060102T15:04:05Z", strValue)
+{{/time_type}}
+{{^time_type}}
+    value, ok := input.({{type}})
+    if !ok {
+{{#float_type}}
+        valueStr, _ := input.(string)
+        if valueStr == "+Inf" {
+            return math.Inf(1), nil
+        } else if valueStr == "-Inf" {
+            return math.Inf(-1), nil
+        }
+{{/float_type}}
+        err = fmt.Errorf("failed to parse XenAPI response: expected Go type %s at %s but got Go type %s with value %v", "{{type}}", context, reflect.TypeOf(input), input)
+    }
+{{/time_type}}
+    return
+}
+
+{{/simple_type}}

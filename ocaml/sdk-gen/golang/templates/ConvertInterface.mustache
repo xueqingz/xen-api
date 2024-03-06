@@ -1,0 +1,9 @@
+{{#interface}}
+{{#deserialize}}
+func Deserialize{{func_partial_type}}(context string, input interface{}) (inter {{go_type}}, err error) {
+    inter = input
+    return
+}
+
+{{/deserialize}}
+{{/interface}}

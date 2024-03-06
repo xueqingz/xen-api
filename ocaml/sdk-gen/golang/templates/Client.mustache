@@ -1,0 +1,37 @@
+type Client struct {
+    rpc *JsonRpcClient
+{{#classes}}
+    {{name}} {{name}}Class
+{{/classes}}
+}
+
+func (client *Client) APICall(method string, params ...interface{}) (result interface{}, err error) {
+    response, err := client.rpc.Call(context.Background(), method, params...)
+    if err != nil {
+        return
+    } 
+   
+    if response.Error != nil {
+        errString := fmt.Sprintf("API Error: code %d, message %s", response.Error.Code, response.Error.Message)
+        if response.Error.Data != nil {
+            errString = errString + fmt.Sprintf(", data %v", response.Error.Data)
+        }
+        err = fmt.Errorf(errString)
+
+        return
+    }
+
+    result = response.Result
+    return
+}
+
+func NewClient(opts *ClientOpts) (*Client, error) {
+    rpc := NewJsonRPCClient(opts)
+    var client Client
+    client.rpc = rpc
+{{#classes}}
+    client.{{name}} = {{name}}Class{&client}
+{{/classes}}
+
+    return &client, nil
+}

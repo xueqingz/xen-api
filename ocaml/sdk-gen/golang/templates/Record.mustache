@@ -1,0 +1,8 @@
+type {{name}}Record struct {
+{{#fields}}
+    // {{description}}
+    {{name}} {{go_type }}
+{{/fields}}
+}
+
+type {{name}}Ref string
