@@ -1760,6 +1760,7 @@ module Ovs = struct
         ; "lacp-time"
         ; "lacp-aggregation-key"
         ; "lacp-fallback-ab"
+        ; "multicast-all-members-active"
         ]
       in
       let mode_args =
@@ -1838,6 +1839,9 @@ module Ovs = struct
           [
             ("lacp-time", "other-config:lacp-time")
           ; ("lacp-fallback-ab", "other-config:lacp-fallback-ab")
+          ; ( "multicast-all-members-active"
+            , "other-config:multicast-all-members-active"
+            )
           ]
       and per_iface_args =
         List.concat_map get_prop
